@@ -16,6 +16,9 @@ div {
 #display {
     width: 305px;
     height: 75px;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-size: 70px;
+    text-align: right;
 }
 
 button {

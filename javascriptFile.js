@@ -36,5 +36,35 @@ let prevNum = 0;
 let operator = "";
 let nextNum = 0;
 
-operate("*", 3, 5);
+//operate("*", 3, 5);
+
+const display = document.querySelector("#display");
+const allButtons = document.querySelectorAll("button");
+const allNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+const allSymbols = ["+", "-", "÷", "x"];
+
+allButtons.forEach((button) => button.addEventListener("click", (event) => {
+    const buttonValue = button.textContent;
+
+    if (allNumbers.includes(buttonValue)) {
+        display.value += buttonValue;
+    } 
+    
+    if (allSymbols.includes(buttonValue)){
+        prevNum = parseInt(display.value);
+        operator = `${button.id}`;
+        display.value = "";
+    }
+
+    if (button.textContent === "=") {
+        nextNum = parseInt(display.value);
+        display.value = operate(operator, prevNum, nextNum);
+    }
+
+    if (button.id === "clear") {
+        display.value = "";
+    }
+
+}));
+
 
