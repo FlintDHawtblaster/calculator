@@ -42,9 +42,15 @@ const display = document.querySelector("#display");
 const allButtons = document.querySelectorAll("button");
 const allNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 const allSymbols = ["+", "-", "÷", "x"];
+let equalClicked = false;
 
 allButtons.forEach((button) => button.addEventListener("click", (event) => {
     const buttonValue = button.textContent;
+
+    if (equalClicked === true) {
+        display.value = "";
+        equalClicked = false;
+    }
 
     if (allNumbers.includes(buttonValue)) {
         display.value += buttonValue;
@@ -53,17 +59,20 @@ allButtons.forEach((button) => button.addEventListener("click", (event) => {
     if (allSymbols.includes(buttonValue)){
         prevNum = parseInt(display.value);
         operator = `${button.id}`;
-        display.value = "";
+        display.value += buttonValue;
     }
 
     if (button.textContent === "=") {
         nextNum = parseInt(display.value);
         display.value = operate(operator, prevNum, nextNum);
+        equalClicked = true;
     }
 
     if (button.id === "clear") {
         display.value = "";
     }
+
+
 
 }));
 
