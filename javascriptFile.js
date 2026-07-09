@@ -27,14 +27,14 @@ function operate(op, a, b) {
         return multiply(a, b);
     } else if (op === "/") {
         return divide(a, b);
-    } else {
-        console.log("Please enter the appropriate operator")
     }
 }
 
 let prevNum = 0;
 let operator = "";
 let nextNum = 0;
+let temp = "";
+let answer = "";
 
 //operate("*", 3, 5);
 
@@ -47,32 +47,41 @@ let equalClicked = false;
 allButtons.forEach((button) => button.addEventListener("click", (event) => {
     const buttonValue = button.textContent;
 
-    if (equalClicked === true) {
+    if (equalClicked === true && allNumbers.includes(buttonValue)) {
         display.value = "";
+        temp = "";
+        equalClicked = false;
+    } else if (equalClicked === true && allSymbols.includes(buttonValue)) {
+        temp = answer.toString();
         equalClicked = false;
     }
 
     if (allNumbers.includes(buttonValue)) {
         display.value += buttonValue;
-    } 
-    
-    if (allSymbols.includes(buttonValue)){
-        prevNum = parseInt(display.value);
-        operator = `${button.id}`;
-        display.value += buttonValue;
-    }
+        temp += buttonValue;
 
-    if (button.textContent === "=") {
-        nextNum = parseInt(display.value);
-        display.value = operate(operator, prevNum, nextNum);
+    } else if (allSymbols.includes(buttonValue)){
+        prevNum = parseInt(temp);
+        operator = button.id;
+        display.value += `${buttonValue}`;
+        temp = "";
+    } else if (button.textContent === "=") {
+        nextNum = parseInt(temp);
+        answer = operate(operator, prevNum, nextNum);
+
+        display.value = answer;
         equalClicked = true;
     }
 
     if (button.id === "clear") {
         display.value = "";
+        answer = "";
+        prevNum = 0;
+        nextNum = 0;
+        temp = "";
+        equalClicked = false;
+        return; 
     }
-
-
 
 }));
 
