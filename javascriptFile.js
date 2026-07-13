@@ -18,6 +18,32 @@ function divide(a, b) {
     return a / b;
 } 
 
+function countTotalDigits(num) {
+    const strNum = num.toString();
+    if (strNum.includes(".")) {
+        return strNum.length - 1;
+    } 
+
+    return strNum.length;
+}
+
+// function roundToSignificantDigits(value, digits = 10) {
+//   if (value === 0) return 0;
+//   // Use toPrecision for rounding logic, then parse back to number
+//   return Number(parseFloat(value.toPrecision(digits)));
+// }
+
+function formatFixedWidth(value, totalLength = 11) {
+  // Convert to string to preserve all characters
+  let str = value.toString();
+  
+  // If the number is too long, truncate or round as needed
+  if (str.length > totalLength) {
+    // Fallback: just slice or use toPrecision if you prefer rounding
+    return str.slice(0, totalLength); 
+  }
+}
+
 function operate(op, a, b) {
     if (op === "+") {
         return add(a, b);
@@ -40,9 +66,10 @@ let answer = "";
 
 const display = document.querySelector("#display");
 const allButtons = document.querySelectorAll("button");
-const allNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+const allNumbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."];
 const allSymbols = ["+", "-", "÷", "x"];
 let equalClicked = false;
+let decimalPoint = false;
 
 allButtons.forEach((button) => button.addEventListener("click", (event) => {
     const buttonValue = button.textContent;
@@ -57,19 +84,32 @@ allButtons.forEach((button) => button.addEventListener("click", (event) => {
     }
 
     if (allNumbers.includes(buttonValue)) {
+        if (buttonValue === ".") {
+            if (decimalPoint === true) {
+                buttonValue = "";
+            } else {
+                decimalPoint = true;
+            }   
+        }
+
         display.value += buttonValue;
         temp += buttonValue;
+        
 
     } else if (allSymbols.includes(buttonValue)){
-        prevNum = parseInt(temp);
+        prevNum = parseFloat(temp);
         operator = button.id;
         display.value += `${buttonValue}`;
         temp = "";
-    } else if (button.textContent === "=") {
-        nextNum = parseInt(temp);
-        answer = operate(operator, prevNum, nextNum);
 
-        display.value = answer;
+    } else if (button.textContent === "=") {
+        nextNum = parseFloat(temp);
+        answer = operate(operator, prevNum, nextNum);
+        if (countTotalDigits(answer) > 10) {
+            display.value = formatFixedWidth(answer);
+        } else {
+            display.value = answer;
+        }
         equalClicked = true;
     }
 
@@ -80,6 +120,7 @@ allButtons.forEach((button) => button.addEventListener("click", (event) => {
         nextNum = 0;
         temp = "";
         equalClicked = false;
+        decimalPoint = false;
         return; 
     }
 
