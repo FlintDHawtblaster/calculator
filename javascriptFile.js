@@ -42,6 +42,7 @@ function formatFixedWidth(value, totalLength = 11) {
     // Fallback: just slice or use toPrecision if you prefer rounding
     return str.slice(0, totalLength); 
   }
+  return str;
 }
 
 function operate(op, a, b) {
@@ -71,8 +72,59 @@ const allSymbols = ["+", "-", "÷", "x"];
 let equalClicked = false;
 let decimalPoint = false;
 
+document.addEventListener("keydown", (event) => {
+    const keyMap = {
+        "Enter": "#calculate",
+        "Escape": "#clear",
+        "Backspace": "#backspace",
+        "*": "x",
+        "/": "÷"
+    };
+
+    let searchTarget = event.key;
+
+    if(keyMap[searchTarget]) {
+        searchTarget = keyMap[searchTarget];
+    }
+
+    let matchingButton;
+
+    if (searchTarget.startsWith("#")) {
+        matchingButton = document.querySelector(searchTarget);
+    } else {
+        matchingButton = Array.from(document.querySelectorAll("button")).find(
+            (button) => button.textContent === searchTarget
+        );
+    }
+
+    if (matchingButton) {
+        event.preventDefault();
+        matchingButton.click();
+    }
+});
+
 allButtons.forEach((button) => button.addEventListener("click", (event) => {
-    const buttonValue = button.textContent;
+    let buttonValue = button.textContent;
+
+    if (button.id === "clear") {
+        display.value = "";
+        answer = "";
+        prevNum = 0;
+        nextNum = 0;
+        temp = "";
+        equalClicked = false;
+        decimalPoint = false;
+        return; 
+    }
+
+    if (button.id === "backspace") {
+        if (temp.endsWith(".")) {
+            decimalPoint = false;
+        }
+        temp = temp.slice(0,-1);
+        display.value = display.value.slice(0,-1);
+        return;
+    }
 
     if (equalClicked === true && allNumbers.includes(buttonValue)) {
         display.value = "";
@@ -98,12 +150,19 @@ allButtons.forEach((button) => button.addEventListener("click", (event) => {
 
     } else if (allSymbols.includes(buttonValue)){
         prevNum = parseFloat(temp);
+        decimalPoint = false;
         operator = button.id;
         display.value += `${buttonValue}`;
         temp = "";
 
     } else if (button.textContent === "=") {
+
+        if (!operator) {
+            return;
+        }
+
         nextNum = parseFloat(temp);
+        decimalPoint = false;
         answer = operate(operator, prevNum, nextNum);
         if (countTotalDigits(answer) > 10) {
             display.value = formatFixedWidth(answer);
@@ -111,17 +170,6 @@ allButtons.forEach((button) => button.addEventListener("click", (event) => {
             display.value = answer;
         }
         equalClicked = true;
-    }
-
-    if (button.id === "clear") {
-        display.value = "";
-        answer = "";
-        prevNum = 0;
-        nextNum = 0;
-        temp = "";
-        equalClicked = false;
-        decimalPoint = false;
-        return; 
     }
 
 }));

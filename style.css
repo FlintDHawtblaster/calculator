@@ -32,9 +32,13 @@ button {
 }
 
 #calculate {
-    width: 310px;
+    width: 200px;
 }
 
 #clear {
     background-color: orange;
+}
+
+#backspace {
+    width: 110px;
 }
